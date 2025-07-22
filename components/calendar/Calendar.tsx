@@ -49,6 +49,7 @@ export default function MonthView({
 }: WeekViewProps) {
   const [width, setWidth] = useState<number>(0);
   const [currentMonth, setCurrentMonth] = useState<Date>(from);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handlePrevMonth = () => {
     setCurrentMonth((prev) => subMonths(prev, 1));
@@ -56,6 +57,29 @@ export default function MonthView({
 
   const handleNextMonth = () => {
     setCurrentMonth((prev) => addMonths(prev, 1));
+  };
+
+  const handleOrder = async () => {
+    if (!selectedDate) return;
+
+    try {
+      const response = await fetch("https://example.com/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date: selectedDate }),
+      });
+
+      if (response.ok) {
+        alert(`Zamówienie na ${selectedDate} zostało złożone.`);
+      } else {
+        alert("Wystąpił błąd podczas składania zamówienia.");
+      }
+    } catch (error) {
+      alert("Nie udało się połączyć z serwerem.");
+      console.error("Order error:", error);
+    }
   };
 
   const monthStart = startOfMonth(currentMonth);
@@ -144,8 +168,9 @@ export default function MonthView({
                   ...(d.today && d.isCurrentMonth
                     ? styles.todayBackground
                     : {}),
+                  ...(selectedDate === d.date ? styles.selectedDay : {}),
                 }}
-                onPress={() => {}}
+                onPress={() => setSelectedDate(d.date)}
               >
                 <View style={styles.dayBox}>
                   {d.isCurrentMonth && (
@@ -165,6 +190,16 @@ export default function MonthView({
           ))}
         </View>
       ))}
+      {selectedDate && (
+        <View style={styles.selectionFooter}>
+          <Text style={styles.selectedDateText}>
+            Wybrana data: {selectedDate}
+          </Text>
+          <TouchableOpacity style={styles.orderButton} onPress={() => handleOrder()}>
+            <Text style={styles.orderButtonText}>Zamów</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -278,5 +313,24 @@ const styles = StyleSheet.create({
   },
   otherMonthText: {
     color: "#ccc",
+  },
+  selectionFooter: {
+    marginTop: 12,
+    alignItems: "center",
+  },
+  selectedDateText: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: "#333",
+  },
+  orderButton: {
+    backgroundColor: orange,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  orderButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
