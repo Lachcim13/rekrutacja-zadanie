@@ -1,10 +1,19 @@
-import moment, { Moment } from "moment";
+import {
+  addDays,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 
 export interface WeekViewProps {
-  from: Moment;
+  from: Date;
   offerDays: string[];
   orderDays: string[];
 }
@@ -18,12 +27,12 @@ interface MonthDay {
   isCurrentMonth: boolean;
 }
 
-// TODO: use color theme 
+// TODO: use color theme
 const blue = "#0070ff";
 const lightBlue = "#4688eb";
 const orange = "#ffaa2a";
 
-export const DayFormat = "YYYY-MM-DD";
+export const DayFormat = "yyyy-MM-dd";
 
 export default function MonthView({
   from,
@@ -32,27 +41,28 @@ export default function MonthView({
 }: WeekViewProps) {
   const [width, setWidth] = useState<number>(0);
 
-  // TODO: don't use momentjs - it's obsolete - switch to other library
-  const monthStart = moment(from).startOf("month");
-  const monthEnd = moment(from).endOf("month");
+  const monthStart = startOfMonth(from);
+  const monthEnd = endOfMonth(from);
 
-  const firstMonday = moment(monthStart).startOf("week");
-  const lastSunday = moment(monthEnd).endOf("week");
+  const firstMonday = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const lastSunday = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
-  const day = moment(firstMonday);
+  let day = firstMonday;
   const days: MonthDay[] = [];
 
-  while (day.isSameOrBefore(lastSunday)) {
+  while (day <= lastSunday) {
+    const formattedDate = format(day, DayFormat);
+
     days.push({
-      day: day.format("DD"),
-      date: day.format(DayFormat),
-      today: day.isSame(moment(), "day"),
-      offer: offerDays.includes(day.format(DayFormat)),
-      order: orderDays.includes(day.format(DayFormat)),
-      isCurrentMonth: day.isSame(from, "month"),
+      day: format(day, "dd"),
+      date: formattedDate,
+      today: isSameDay(day, new Date()),
+      offer: offerDays.includes(formattedDate),
+      order: orderDays.includes(formattedDate),
+      isCurrentMonth: isSameMonth(day, from),
     });
 
-    day.add(1, "day");
+    day = addDays(day, 1);
   }
 
   const weeks: MonthDay[][] = [];
@@ -95,8 +105,7 @@ export default function MonthView({
               }}
               key={d.date}
             >
-
-            { /* TODO: Add ability to select day, mark selected day on the calendar.
+              {/* TODO: Add ability to select day, mark selected day on the calendar.
             Display day details below the calendar */}
               <Pressable
                 style={{
