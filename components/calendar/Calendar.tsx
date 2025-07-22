@@ -1,5 +1,6 @@
 import {
   addDays,
+  addMonths,
   endOfMonth,
   endOfWeek,
   format,
@@ -7,9 +8,16 @@ import {
   isSameMonth,
   startOfMonth,
   startOfWeek,
+  subMonths,
 } from "date-fns";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ThemedText } from "../ThemedText";
 
 export interface WeekViewProps {
@@ -40,9 +48,18 @@ export default function MonthView({
   offerDays,
 }: WeekViewProps) {
   const [width, setWidth] = useState<number>(0);
+  const [currentMonth, setCurrentMonth] = useState<Date>(from);
 
-  const monthStart = startOfMonth(from);
-  const monthEnd = endOfMonth(from);
+  const handlePrevMonth = () => {
+    setCurrentMonth((prev) => subMonths(prev, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth((prev) => addMonths(prev, 1));
+  };
+
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
 
   const firstMonday = startOfWeek(monthStart, { weekStartsOn: 1 });
   const lastSunday = endOfWeek(monthEnd, { weekStartsOn: 1 });
@@ -59,7 +76,7 @@ export default function MonthView({
       today: isSameDay(day, new Date()),
       offer: offerDays.includes(formattedDate),
       order: orderDays.includes(formattedDate),
-      isCurrentMonth: isSameMonth(day, from),
+      isCurrentMonth: isSameMonth(day, currentMonth),
     });
 
     day = addDays(day, 1);
@@ -77,6 +94,18 @@ export default function MonthView({
       style={styles.days}
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >
+      {/* Month navigation */}
+      <View style={styles.monthHeader}>
+        <TouchableOpacity onPress={handlePrevMonth}>
+          <Text style={styles.navButton}>‹</Text>
+        </TouchableOpacity>
+        <Text style={styles.monthLabel}>
+          {format(currentMonth, "MMMM yyyy")}
+        </Text>
+        <TouchableOpacity onPress={handleNextMonth}>
+          <Text style={styles.navButton}>›</Text>
+        </TouchableOpacity>
+      </View>
       {/* Week day header */}
       <View style={styles.weekHeader}>
         {weekDayNames.map((dayName) => (
@@ -175,6 +204,23 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "poppins-bold",
     color: "#fff",
+  },
+  monthHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginBottom: 8,
+  },
+  navButton: {
+    fontSize: 24,
+    color: blue,
+    paddingHorizontal: 12,
+  },
+  monthLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
   },
   days: {
     marginVertical: 2,
