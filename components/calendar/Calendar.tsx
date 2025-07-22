@@ -11,13 +11,9 @@ import {
   subMonths,
 } from "date-fns";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 import CalendarDay from "./CalendarDay";
 
 export interface WeekViewProps {
@@ -119,17 +115,15 @@ export default function MonthView({
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >
       {/* Month navigation */}
-      <View style={styles.monthHeader}>
+      <ThemedView style={styles.monthHeader}>
         <TouchableOpacity onPress={handlePrevMonth}>
           <Text style={styles.navButton}>‹</Text>
         </TouchableOpacity>
-        <Text style={styles.monthLabel}>
-          {format(currentMonth, "MMMM yyyy")}
-        </Text>
+        <ThemedText>{format(currentMonth, "MMMM yyyy")}</ThemedText>
         <TouchableOpacity onPress={handleNextMonth}>
           <Text style={styles.navButton}>›</Text>
         </TouchableOpacity>
-      </View>
+      </ThemedView>
       {/* Week day header */}
       <View style={styles.weekHeader}>
         {weekDayNames.map((dayName) => (
@@ -161,11 +155,14 @@ export default function MonthView({
       ))}
       {selectedDate && (
         <View style={styles.selectionFooter}>
-          <Text style={styles.selectedDateText}>
+          <ThemedText style={styles.selectedDateText}>
             Wybrana data: {selectedDate}
-          </Text>
-          <TouchableOpacity style={styles.orderButton} onPress={() => handleOrder()}>
-            <Text style={styles.orderButtonText}>Zamów</Text>
+          </ThemedText>
+          <TouchableOpacity
+            style={styles.orderButton}
+            onPress={() => handleOrder()}
+          >
+            <ThemedText style={styles.orderButtonText}>Zamów</ThemedText>
           </TouchableOpacity>
         </View>
       )}
@@ -288,9 +285,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedDateText: {
-    fontSize: 14,
     marginBottom: 8,
-    color: "#333",
   },
   orderButton: {
     backgroundColor: orange,

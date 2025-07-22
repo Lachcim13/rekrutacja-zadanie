@@ -28,7 +28,7 @@ const CalendarDay = ({
       key={d.date}
     >
       <Pressable
-        disabled={!d.offer && d.isCurrentMonth}
+        disabled={!d.offer}
         style={{
           ...styles.touchableBox,
           ...(d.offer || !d.isCurrentMonth ? {} : styles.noOfferDay),
@@ -48,6 +48,7 @@ const CalendarDay = ({
                   : {}),
                 ...(d.isCurrentMonth ? {} : styles.otherMonthText),
               }}
+              darkColor={Colors.light.text}
             >
               {d.day}
             </ThemedText>
