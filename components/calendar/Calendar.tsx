@@ -145,6 +145,7 @@ export default function MonthView({
           {week.map((d) => (
             <CalendarDay
               key={d.date}
+              currentMonth={currentMonth}
               d={d}
               width={width}
               selectedDate={selectedDate}

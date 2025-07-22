@@ -9,6 +9,7 @@ export interface CalendarDayProps {
   width: number;
   selectedDate: string | null;
   setSelectedDate: (date: string) => void;
+  currentMonth: Date;
 }
 
 const CalendarDay = ({
@@ -16,7 +17,11 @@ const CalendarDay = ({
   width,
   selectedDate,
   setSelectedDate,
+  currentMonth,
 }: CalendarDayProps) => {
+  const isDisabled =
+    !d.offer && currentMonth?.getMonth() !== new Date(d.date).getMonth();
+
   return (
     <View
       style={{
@@ -28,7 +33,7 @@ const CalendarDay = ({
       key={d.date}
     >
       <Pressable
-        disabled={!d.offer}
+        disabled={isDisabled}
         style={{
           ...styles.touchableBox,
           ...(d.offer || !d.isCurrentMonth ? {} : styles.noOfferDay),
