@@ -20,7 +20,7 @@ const CalendarDay = ({
   currentMonth,
 }: CalendarDayProps) => {
   const isDisabled =
-    !d.offer && currentMonth?.getMonth() !== new Date(d.date).getMonth();
+    !d.offer || currentMonth?.getMonth() !== new Date(d.date).getMonth();
 
   return (
     <View
