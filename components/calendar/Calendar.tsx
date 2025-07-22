@@ -12,13 +12,13 @@ import {
 } from "date-fns";
 import React, { useState } from "react";
 import {
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { ThemedText } from "../ThemedText";
+import CalendarDay from "./CalendarDay";
 
 export interface WeekViewProps {
   from: Date;
@@ -26,7 +26,7 @@ export interface WeekViewProps {
   orderDays: string[];
 }
 
-interface MonthDay {
+export interface MonthDay {
   day: string;
   date: string;
   today: boolean;
@@ -149,44 +149,13 @@ export default function MonthView({
       {weeks.map((week, weekIndex) => (
         <View key={`week-${week[0]?.date || weekIndex}`} style={styles.weekRow}>
           {week.map((d) => (
-            <View
-              style={{
-                ...{
-                  width: width / 7,
-                  padding: 1,
-                },
-              }}
+            <CalendarDay
               key={d.date}
-            >
-              {/* TODO: Add ability to select day, mark selected day on the calendar.
-            Display day details below the calendar */}
-              <Pressable
-                style={{
-                  ...styles.touchableBox,
-                  ...(d.offer || !d.isCurrentMonth ? {} : styles.noOfferDay),
-                  ...(d.isCurrentMonth ? {} : styles.otherMonthDay),
-                  ...(d.today && d.isCurrentMonth
-                    ? styles.todayBackground
-                    : {}),
-                  ...(selectedDate === d.date ? styles.selectedDay : {}),
-                }}
-                onPress={() => setSelectedDate(d.date)}
-              >
-                <View style={styles.dayBox}>
-                  {d.isCurrentMonth && (
-                    <ThemedText
-                      style={{
-                        ...styles.dayText,
-                        ...(d.today ? { fontWeight: "bold", color: blue } : {}),
-                        ...(d.isCurrentMonth ? {} : styles.otherMonthText),
-                      }}
-                    >
-                      {d.day}
-                    </ThemedText>
-                  )}
-                </View>
-              </Pressable>
-            </View>
+              d={d}
+              width={width}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
           ))}
         </View>
       ))}
